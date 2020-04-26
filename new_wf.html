@@ -1,0 +1,144 @@
+<head>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+   <div id="maincontent">
+      <center>
+         <i>
+            <h1>DO You Want To Know Weather Forecast...</h1>
+            <h2 style="color:white;">We Are Happy To Help You ;-)</h2>
+         </i>
+         <button class="button" type="button" onclick=weather('mylocation')>My Location</button><br/><br/>
+         <button class="button" type="button"onclick=otherLocation()>Other Locaation...!</button>
+      </center>
+   </div>
+   <div id = "outputdata" align = "center">
+      <h1>Weather Report</h1>
+      <div id="location"></div>
+      <div id="loc"></div>
+      <div id="temp"></div>
+      <div id="minutely"></div>
+      <div id="pre"></div>
+   </div>
+   <div id = "otherlocation" class = "center-block">
+      <form>
+         <b style="color:white;">Lattitude  : </b>
+         <input type="text" id="Lattitude"><br><br>
+         <b style="color:white;">Longitude : </b>
+         <input type="text" id="Longitude"><br><br>
+         <input type="submit" class = "button" value="Get Weather Report" onclick="return weather('location')">
+      </form>
+   </div>
+   <script>  
+		$(document).ready(function() {
+			$('#outputdata').hide();
+			$('#otherlocation').hide();
+		});
+
+		function otherLocation() {
+			$('#maincontent').hide();
+			$('#otherlocation').show();
+		}
+
+		function weather(flow) {
+			$('#maincontent').hide();
+			$('#outputdata').show();
+			if (flow === 'mylocation') {
+				$('#location').html('<h2 style="color:white;">Loading...</h2>');
+				navigator.geolocation.getCurrentPosition(success, error);
+			} else {
+				$('#otherlocation').hide();
+				latitude = document.getElementById("Lattitude").value;
+				longitude = document.getElementById("Longitude").value;
+				displayWeather(latitude, longitude);
+			}
+			return false;
+		}
+
+		function success(position) {
+			latitude = position.coords.latitude;
+			longitude = position.coords.longitude;
+			displayWeather(latitude, longitude);
+		}
+
+		function displayWeather(latitude, longitude) {
+			$('#outputdata').show();
+
+			var apiKey = 'a51e54e3565e409260281447b8a278ee'; // PLEASE SIGN UP FOR YOUR OWN API KEY
+
+			var location = document.getElementById("location");
+			location.html = "";
+			location.innerHTML = '<h2 style="color:white;"> Latitude is ' + latitude + '° </h2><h2 style="color:white;"> Longitude is ' + longitude + '°</h2>';
+
+			$.getJSON("http:api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&appid=" + apiKey, function(data) {
+				//document.write(JSON.stringify(data));
+				$('#temp').html('<h2 style="color:white;">Current temperature in celsius is ' + data.main.temp + '° C</h2>');
+				$('#minutely').html('<h2 style="color:white;">Current temperature in Fahrenheit is ' + (data.main.temp * 1.8) + 32 + '° F </h2>');
+				if(data.name != ''){
+					$('#loc').html('<h2 style="color:white;">'+data.weather[0].description+' in '+ data.name + '</h2>');
+				}
+				else{
+					$('#loc').html('<h2 style="color:white;">'+data.weather[0].description+' in your location </h2>');
+				}
+				$('#pre').html('<h2 style="color:white;">pressure is  ' + data.main.pressure + '  millibars </h2>');
+				return false;
+			});
+		}
+
+		function error() {
+			location.innerHTML = "Unable to retrieve your location";
+		}
+   </script>
+</head>
+<body>
+   <style>
+      body {
+      background-image: url('https://i1.wp.com/static.web-backgrounds.net/uploads/2012/08/City_Landscape_Background.jpg');
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      background-size: cover;
+      }
+      h1 {
+      text-shadow: 2px 0 0 #fff, -2px 0 0 #fff, 0 2px 0 #fff, 0 -2px 0 #fff, 1px 1px #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff;
+      }
+      h2 {
+      text-shadow: 1px 1px 1px black;
+      }
+      .button {
+      border: 2px solid  #e6f5ff;
+      border-radius: 5px;
+      position: relative;
+      background-color: #0099ff;
+      color: #ffe6e6;
+      text-align: center;
+      -webkit-transition-duration: 0.4s;
+      transition-duration: 0.4s;
+      text-decoration: none;
+      overflow: hidden;
+      cursor: pointer;
+      }
+      .button:after {
+      content: "";
+      background: #cce6ff;
+      display: block;
+      position: absolute;
+      padding-top: 300%;
+      padding-left: 350%;
+      margin-left: -20px!important;
+      margin-top: -120%;
+      opacity: 0;
+      transition: all 0.8s
+      }
+      .button:active:after {
+      padding: 0;
+      margin: 0;
+      opacity: 1;
+      transition: 0s
+      }
+	  
+	  .center-block {
+		  top:50%;
+		  left: 50%;
+		  transform: translate3d(-50%,-50%, 0);
+		  position: absolute;
+		}
+   </style>
+</body>
